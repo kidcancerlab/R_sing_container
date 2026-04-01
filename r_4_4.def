@@ -1,0 +1,47 @@
+Bootstrap: docker
+From: rocker/r-base:4.4.3
+
+%post
+    # Update and install system dependencies
+    apt-get update && apt-get install -y --no-install-recommends \
+        curl \
+        wget \
+        ca-certificates \
+        tar
+
+    # 1. Install rv
+    # Using the provided install script
+    curl -sSL https://raw.githubusercontent.com/A2-ai/rv/refs/heads/main/scripts/install.sh | bash
+
+    # 2. Install Quarto
+    # Download, extract to /opt, and create a symlink to make it available in the PATH
+    QUARTO_VERSION="1.9.36"
+    wget https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
+    
+    mkdir -p /opt/quarto/${QUARTO_VERSION}
+    tar -xzf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz -C /opt/quarto/${QUARTO_VERSION} --strip-components=1
+    
+    # Link the binary to a standard PATH location
+    ln -s /opt/quarto/${QUARTO_VERSION}/bin/quarto /usr/local/bin/quarto
+
+    # Clean up
+    rm quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
+
+%environment
+    # Ensure quarto and rv-installed binaries are in the path if necessary
+    export LC_ALL=C
+    export PATH=/usr/local/bin:$PATH
+
+%test
+    # Verify installations
+    R --version
+    rv --version
+    quarto --version
+
+%help
+    This container includes:
+    - R (rocker/r-base:4.4.3)
+    - rv (R package manager)
+    - Quarto v1.9.36
