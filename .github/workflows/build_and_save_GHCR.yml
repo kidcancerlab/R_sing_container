@@ -1,8 +1,9 @@
+---
 name: Build and Push Apptainer Image to GHCR
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -27,8 +28,10 @@ jobs:
 
       - name: Log in to GitHub Container Registry
         run: |
-          echo "${{ secrets.PAT }}" | apptainer remote login \
-            -u "${{ github.actor }}" --password-stdin "oras://${{ env.REGISTRY }}"
+          echo "${{ secrets.PAT }}" \
+            | apptainer remote login \
+              -u "${{ github.actor }}" \
+              --password-stdin "oras://${{ env.REGISTRY }}"
 
       - name: Build Apptainer Image
         run: |
@@ -38,7 +41,8 @@ jobs:
       - name: Push to GHCR
         run: |
           # Convert owner name to lowercase for the registry URL
-          OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          OWNER_LOWER=$(echo "${{ github.repository_owner }}" \
+            | tr '[:upper:]' '[:lower:]')
           
           apptainer push "${{ env.IMAGE_NAME }}.sif" \
             "oras://${{ env.REGISTRY }}/${OWNER_LOWER}/${{ env.IMAGE_NAME }}:latest"
