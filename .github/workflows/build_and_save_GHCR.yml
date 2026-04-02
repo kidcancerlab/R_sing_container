@@ -48,3 +48,9 @@ jobs:
           
           apptainer push "${{ env.IMAGE_NAME }}.sif" \
             "oras://${{ env.REGISTRY }}/${OWNER_LOWER}/${IMAGE_LOWER}:latest"
+
+          # Tag the container to make it reproducible
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          apptainer push "${{ env.IMAGE_NAME }}.sif" \
+            "oras://${{ env.REGISTRY }}/${OWNER_LOWER}/${IMAGE_LOWER}:${SHORT_SHA}"
+
