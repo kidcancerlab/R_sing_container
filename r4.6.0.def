@@ -1,0 +1,72 @@
+Bootstrap: docker
+From: rocker/r-ver:4.6.0
+
+%post
+    # Version variables for easy updates
+    RV_VERSION="v0.21.0"
+    QUARTO_VERSION="1.9.37"
+
+    # Update and install system dependencies
+    apt-get update && apt-get install -y --no-install-recommends \
+        curl \
+        wget \
+        ca-certificates \
+        tar
+
+    # 1. Install rv
+    # Using the provided install script
+    wget https://github.com/A2-ai/rv/releases/download/${RV_VERSION}/rv-${RV_VERSION}-x86_64-unknown-linux-gnu.tar.gz
+
+    mkdir -p /opt/rv/${RV_VERSION}
+    tar xzf \
+        rv-${RV_VERSION}-x86_64-unknown-linux-gnu.tar.gz \
+        -C /opt/rv/${RV_VERSION}
+
+    # Link the binary to /usr/local/bin
+    ln -s \
+        /opt/rv/${RV_VERSION}/rv \
+        /usr/local/bin/rv
+
+    # Clean up
+    rm rv-${RV_VERSION}-x86_64-unknown-linux-gnu.tar.gz
+
+    # Define cache location so that we can bind a host directory to it for caching between runs
+    mkdir -p /cache/rv
+
+    # 2. Install Quarto
+    # Download, extract to /opt, and create a symlink to make it available in the PATH
+    wget https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
+    
+    mkdir -p /opt/quarto/${QUARTO_VERSION}
+    tar xzf \
+        quarto-${QUARTO_VERSION}-linux-amd64.tar.gz \
+        -C /opt/quarto/${QUARTO_VERSION} \
+        --strip-components=1
+    
+    # Link the binary to a standard PATH location
+    ln -s \
+        /opt/quarto/${QUARTO_VERSION}/bin/quarto \
+        /usr/local/bin/quarto
+
+    # Clean up
+    rm quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
+
+%environment
+    # Ensure quarto and rv-installed binaries are in the path if necessary
+    export LC_ALL=C
+    export PATH=/usr/local/bin:$PATH
+    export RV_CACHE_DIR=/cache/rv
+
+%test
+    # Verify installations
+    R --version
+    rv --version
+    quarto --version
+
+%help
+    This container includes:
+    - R (rocker/r-ver:4.6.0)
+    - rv (R package manager)
+    - Quarto
