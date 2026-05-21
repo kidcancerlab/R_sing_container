@@ -46,7 +46,7 @@ jobs:
       - name: Determine image name
         run: |
           IMAGE_BASE=$(basename "${{ matrix.def_file }}" .def)
-          echo "IMAGE_NAME=${IMAGE_BASE}" >> $GITHUB_ENV
+          echo "IMAGE_NAME=${IMAGE_BASE}" >> "$GITHUB_ENV"
 
       - name: Install Apptainer
         uses: eWaterCycle/setup-apptainer@v2
@@ -79,4 +79,3 @@ jobs:
           SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
           apptainer push "${{ env.IMAGE_NAME }}.sif" \
             "oras://${{ env.REGISTRY }}/${OWNER_LOWER}/${IMAGE_LOWER}:${SHORT_SHA}"
-
