@@ -65,6 +65,6 @@ From: rocker/r-ver:4.4.3
 
 %help
     This container includes:
-    - R (rocker/r-base:4.4.3)
+    - R (rocker/r-ver:4.4.3)
     - rv (R package manager)
     - Quarto
