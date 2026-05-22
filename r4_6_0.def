@@ -21,7 +21,6 @@ From: rocker/r-ver:4.6.0
         libproj-dev \
         sqlite3 \
         libsqlite3-dev \
-        \
         libcairo2-dev \
         cmake \
         libnode-dev \
@@ -38,9 +37,8 @@ From: rocker/r-ver:4.6.0
         libssl-dev \
         zlib1g-dev \
         libbz2-dev \
-        liblzma-dev
-
-
+        liblzma-dev \
+        patch
 
     ####### 1. Install rv
     # Download the release archive and extract it into /opt
