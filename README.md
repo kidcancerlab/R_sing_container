@@ -12,7 +12,7 @@ cd testrv
 
 singularity pull oras://ghcr.io/kidcancerlab/r4_6_0:latest
 
-# The rv cache needs to be outside of the container and binded to it, so we make a directory for it here.
+# The rv cache needs to be outside of the container and bound to it, so we make a directory for it here.
 mkdir rv_cache
 
 singularity shell \
