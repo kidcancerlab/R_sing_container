@@ -1,4 +1,4 @@
-# R4_4_sing_container
+# R singularity/apptainer containers
 
 ## Usage
 
@@ -8,17 +8,18 @@
 # Make a workspace
 cd
 mkdir testrv
+
+# The rv cache needs to be outside of the container and bound to it, so we make a directory for it here.
+mkdir testrv/rv_cache
 cd testrv
 
 singularity pull oras://ghcr.io/kidcancerlab/r4_6_0:latest
 
-# The rv cache needs to be outside of the container and bound to it, so we make a directory for it here.
-mkdir rv_cache
 
 singularity shell \
     --no-home \
     --bind ~/testrv:/project \
-    -B ~/testrv/rv_cache:/cache/rv \
+    --bind ~/testrv/rv_cache:/cache/rv \
     r4_6_0_latest.sif
 ```
 
@@ -68,6 +69,7 @@ Then, you can run the container using these commands:
 ```bash
 cd
 mkdir testrv
+mkdir testrv/rv_cache
 cd testrv
 
 singularity shell \
