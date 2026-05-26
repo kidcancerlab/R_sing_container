@@ -39,7 +39,7 @@ From: rocker/r-ver:4.6.0
         libbz2-dev \
         liblzma-dev \
         patch \
-        libhdf5-dev \
+        libhdf5-openmpi-dev \
         hdf5-tools
 
     ####### 1. Install rv
