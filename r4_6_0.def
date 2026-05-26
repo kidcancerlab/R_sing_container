@@ -38,7 +38,9 @@ From: rocker/r-ver:4.6.0
         zlib1g-dev \
         libbz2-dev \
         liblzma-dev \
-        patch
+        patch \
+        libhdf5-dev \
+        hdf5-tools
 
     ####### 1. Install rv
     # Download the release archive and extract it into /opt
