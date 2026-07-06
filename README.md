@@ -15,9 +15,15 @@ cd testrv
 
 singularity pull oras://ghcr.io/kidcancerlab/r4_6_0:latest
 
+# We use --no-home so that R doesn't get confused about your packages, configuration and doesn't improperly write to your home directory
+
+# The DISPLAY and XAUTHORITY stuff lets you plot using X11 forwarding from within the container
 
 singularity shell \
     --no-home \
+    --env DISPLAY=$DISPLAY \
+    --env XAUTHORITY=/tmp/.Xauthority \
+    --bind $HOME/.Xauthority:/tmp/.Xauthority \
     --bind ~/testrv:/project \
     --bind ~/testrv/rv_cache:/cache/rv \
     r4_6_0_latest.sif
