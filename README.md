@@ -14,15 +14,37 @@ mkdir testrv/rv_cache
 cd testrv
 
 singularity pull oras://ghcr.io/kidcancerlab/r4_6_0:latest
+```
 
-# We use --no-home so that R doesn't get confused about your packages, configuration and doesn't improperly write to your home directory
+### Start the container
 
-# The DISPLAY and XAUTHORITY stuff lets you plot using X11 forwarding from within the container
+We use --no-home so that R doesn't get confused about your packages, configuration and doesn't improperly write to your home directory
 
+The DISPLAY and XAUTHORITY stuff lets you plot using X11 forwarding from within the container. There are two tricks here. You need to specify where your .Xauthority file is. 
+
+For my HPC environment, this is going to either be /tmp/.Xauthority if you are on a login node. When you connect to a compute node, be sure to include `--x11` in your srun command:
+
+`srun -c 2 --x11 --pty bash`
+
+When you do this, your xauthority file is not in the same location. However, its location is specified by the $XAUTHORITY environment variable. You can't use $XAUTHORITY on the login node as this variable is not set. If you set it, your srun request will not work properly due to "magic cookie" errors.
+
+We will define an environment variable "USE_XAUTH" that is defined based on where we find the .Xauthority file
+```bash 
+if [ -f /tmp/.Xauthority ]; then
+  export USE_XAUTH=/tmp/.Xauthority
+elif [ -f $XAUTHORITY ]; then
+  export USE_XAUTH=$XAUTHORITY
+else
+  echo "No XAUTHORITY file found. Exiting."
+  exit 1
+fi
+```
+
+```bash
 singularity shell \
     --no-home \
     --env DISPLAY=$DISPLAY \
-    --env XAUTHORITY=/tmp/.Xauthority \
+    --env XAUTHORITY=${USE_XAUTH} \
     --bind $HOME/.Xauthority:/tmp/.Xauthority \
     --bind ~/testrv:/project \
     --bind ~/testrv/rv_cache:/cache/rv \
