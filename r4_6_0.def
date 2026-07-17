@@ -40,7 +40,8 @@ From: rocker/r-ver:4.6.0
         liblzma-dev \
         patch \
         libhdf5-openmpi-dev \
-        hdf5-tools
+        hdf5-tools \
+        libmagick++-dev
 
     ####### 1. Install rv
     # Download the release archive and extract it into /opt
