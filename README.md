@@ -9,8 +9,8 @@
 cd
 mkdir testrv
 
-# The rv cache needs to be outside of the container and bound to it, so we make a directory for it here.
-mkdir testrv/rv_cache
+# The rv cache needs to be outside of the container and bound to it, so we make a directory for it here. I'm putting this into it's own folder in my actual home directory so it can be used across projects.
+mkdir ~/.sing_rv_cache
 cd testrv
 
 singularity pull oras://ghcr.io/kidcancerlab/r4_6_0:latest
@@ -30,10 +30,10 @@ When you do this, your xauthority file is not in the same location. However, its
 
 We will define an environment variable "USE_XAUTH" that is defined based on where we find the .Xauthority file
 ```bash 
-if [ -f /tmp/.Xauthority ]; then
+if [[ -n "${XAUTHORITY-}" ]]; then
+  export USE_XAUTH=${XAUTHORITY}
+elif [ -f /tmp/.Xauthority ]; then
   export USE_XAUTH=/tmp/.Xauthority
-elif [ -f $XAUTHORITY ]; then
-  export USE_XAUTH=$XAUTHORITY
 else
   echo "No XAUTHORITY file found. Exiting."
   exit 1
@@ -42,13 +42,15 @@ fi
 
 ```bash
 singularity shell \
-    --no-home \
-    --env DISPLAY=$DISPLAY \
-    --env XAUTHORITY=${USE_XAUTH} \
-    --bind $HOME/.Xauthority:/tmp/.Xauthority \
-    --bind ~/testrv:/project \
-    --bind ~/testrv/rv_cache:/cache/rv \
-    r4_6_0_latest.sif
+  --no-home \
+  --cleanenv \
+  --home "$(pwd):/project" \
+  --env DISPLAY=$DISPLAY \
+  --env XAUTHORITY=${USE_XAUTH} \
+  --bind $HOME/.Xauthority:/tmp/.Xauthority \
+  --bind $(pwd):/project \
+  --bind ~/.sing_rv_cache:/cache/rv \
+  r4_6_0_latest.sif
 ```
 
 ### inside of container
@@ -67,6 +69,9 @@ rv init
 ```
 
 update rproject.toml:
+
+> [!WARNING]
+> !!!! Make sure you update the bioconductor release version to match your R version !!!!
 ```toml
 repositories = [
   { alias = "CRAN", url = "https://cran.rstudio.com/" },
