@@ -42,7 +42,8 @@ From: rocker/r-ver:4.6.0
         libhdf5-openmpi-dev \
         hdf5-tools \
         libmagick++-dev \
-        less
+        less \
+        parallel
 
     ####### 1. Install rv
     # Download the release archive and extract it into /opt
